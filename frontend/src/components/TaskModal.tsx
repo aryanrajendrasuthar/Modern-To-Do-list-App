@@ -4,17 +4,20 @@ import styles from './TaskModal.module.css';
 
 interface Props {
   task?: Task;
+  defaultDate?: string | null;
   onSave: (data: Partial<Task>) => Promise<void>;
   onClose: () => void;
 }
 
-export default function TaskModal({ task, onSave, onClose }: Props) {
+export default function TaskModal({ task, defaultDate, onSave, onClose }: Props) {
   const [title, setTitle] = useState(task?.title || '');
   const [description, setDescription] = useState(task?.description || '');
   const [priority, setPriority] = useState<Priority>(task?.priority || 'medium');
   const [status, setStatus] = useState<Status>(task?.status || 'todo');
   const [dueDate, setDueDate] = useState(
-    task?.dueDate ? new Date(task.dueDate).toISOString().split('T')[0] : ''
+    task?.dueDate
+      ? new Date(task.dueDate).toISOString().split('T')[0]
+      : (defaultDate || '')
   );
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(task?.tags || []);
