@@ -56,12 +56,50 @@
 .checkbox:hover { border-color: var(--accent); }
 .checkbox.checked { background: var(--accent); border-color: var(--accent); }
 
+.taskIcon { margin-right: 0.3rem; }
+
 .title {
   font-size: 0.9rem;
   font-weight: 500;
   color: var(--text-primary);
   line-height: 1.4;
   word-break: break-word;
+  cursor: pointer;
+  transition: color 0.1s;
+}
+
+.title:hover { color: var(--accent); }
+
+.subtaskRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subtaskBar {
+  flex: 1;
+  height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.subtaskFill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+
+.subtaskCount {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.dueTime {
+  font-size: 0.72rem;
+  color: var(--text-muted);
 }
 
 .completed .title { text-decoration: line-through; color: var(--text-muted); }

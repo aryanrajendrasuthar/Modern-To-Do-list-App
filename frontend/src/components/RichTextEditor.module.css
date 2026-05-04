@@ -1,0 +1,106 @@
+.wrapper {
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+
+.editable:focus-within { border-color: var(--accent); }
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-secondary);
+  flex-wrap: wrap;
+}
+
+.toolBtn {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 5px;
+  background: none;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+  flex-shrink: 0;
+}
+
+.toolBtn:hover { background: var(--bg-hover); color: var(--text-primary); }
+.toolBtn.active { background: var(--accent); color: white; }
+
+.divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 2px;
+}
+
+/* Tiptap editor content area */
+.editor :global(.tiptap) {
+  padding: 0.75rem;
+  min-height: 100px;
+  outline: none;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.readonly .editor :global(.tiptap) {
+  min-height: unset;
+  padding: 0.5rem 0;
+}
+
+.editor :global(.tiptap p.is-editor-empty:first-child::before) {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+  pointer-events: none;
+  float: left;
+  height: 0;
+}
+
+.editor :global(.tiptap p) { margin: 0 0 0.5rem; }
+.editor :global(.tiptap p:last-child) { margin-bottom: 0; }
+
+.editor :global(.tiptap ul),
+.editor :global(.tiptap ol) {
+  padding-left: 1.4rem;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.editor :global(.tiptap li) { margin-bottom: 0.15rem; }
+
+.editor :global(.tiptap blockquote) {
+  border-left: 3px solid var(--accent);
+  padding-left: 0.875rem;
+  margin: 0.5rem 0;
+  color: var(--text-secondary);
+}
+
+.editor :global(.tiptap code) {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.1rem 0.35rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.85em;
+}
+
+.editor :global(.tiptap pre) {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.75rem;
+  overflow-x: auto;
+}
+
+.editor :global(.tiptap strong) { font-weight: 700; }
+.editor :global(.tiptap em) { font-style: italic; }
+.editor :global(.tiptap s) { text-decoration: line-through; }

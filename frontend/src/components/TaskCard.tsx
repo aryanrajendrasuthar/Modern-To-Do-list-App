@@ -55,16 +55,33 @@ export default function TaskCard({ task, onEdit, onDelete, onToggle }: Props) {
         <div className={styles.topRow}>
           <button
             className={`${styles.checkbox} ${task.completed ? styles.checked : ''}`}
-            onClick={() => onToggle(task)}
+            onClick={(e) => { e.stopPropagation(); onToggle(task); }}
             title={task.completed ? 'Mark incomplete' : 'Mark complete'}
           >
             {task.completed && '✓'}
           </button>
-          <span className={styles.title}>{task.title}</span>
+          <span className={styles.title} onClick={() => onEdit(task)}>
+            {task.icon && <span className={styles.taskIcon}>{task.icon}</span>}
+            {task.title}
+          </span>
         </div>
 
         {task.description && (
           <p className={styles.description}>{task.description}</p>
+        )}
+
+        {task.subtasks.length > 0 && (
+          <div className={styles.subtaskRow}>
+            <div className={styles.subtaskBar}>
+              <div
+                className={styles.subtaskFill}
+                style={{ width: `${(task.subtasks.filter((s) => s.completed).length / task.subtasks.length) * 100}%` }}
+              />
+            </div>
+            <span className={styles.subtaskCount}>
+              {task.subtasks.filter((s) => s.completed).length}/{task.subtasks.length}
+            </span>
+          </div>
         )}
 
         <div className={styles.meta}>
@@ -76,7 +93,8 @@ export default function TaskCard({ task, onEdit, onDelete, onToggle }: Props) {
           </span>
           {formattedDue && (
             <span className={`${styles.due} ${isOverdue ? styles.overdue : ''}`}>
-              {isOverdue ? '⚠️' : '📅'} {formattedDue}
+              {isOverdue ? '⚠' : '◷'} {formattedDue}
+              {task.dueTime && <span className={styles.dueTime}> {task.dueTime}</span>}
             </span>
           )}
           {task.tags.map((tag) => (

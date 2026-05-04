@@ -48,5 +48,9 @@ export const useTasks = () => {
     await tasksApi.reorder(payload).catch(() => {});
   }, []);
 
-  return { tasks, loading, error, fetchTasks, createTask, updateTask, deleteTask, reorderTasks };
+  const replaceTask = useCallback((updated: Task) => {
+    setTasks((prev) => prev.map((t) => (t._id === updated._id ? updated : t)));
+  }, []);
+
+  return { tasks, loading, error, fetchTasks, createTask, updateTask, deleteTask, reorderTasks, replaceTask };
 };

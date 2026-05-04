@@ -16,6 +16,7 @@ import {
 } from '@dnd-kit/sortable';
 import { format } from 'date-fns';
 import { useTasks } from '../hooks/useTasks';
+import { useAuth } from '../hooks/useAuth';
 import type { Task, TaskFilters, Status, ViewMode } from '../types';
 import Navbar from '../components/Navbar';
 import FilterPanel from '../components/FilterPanel';
@@ -26,6 +27,7 @@ import ViewSwitcher from '../components/ViewSwitcher';
 import BoardView from '../components/BoardView';
 import CalendarView from '../components/CalendarView';
 import TableView from '../components/TableView';
+import TaskDetailPanel from '../components/TaskDetailPanel';
 import styles from './DashboardPage.module.css';
 
 function getStoredView(): ViewMode {
@@ -34,13 +36,14 @@ function getStoredView(): ViewMode {
 }
 
 export default function DashboardPage() {
-  const { tasks, loading, error, fetchTasks, createTask, updateTask, deleteTask, reorderTasks } =
+  const { tasks, loading, error, fetchTasks, createTask, updateTask, deleteTask, reorderTasks, replaceTask } =
     useTasks();
+  const { user } = useAuth();
   const [filters, setFilters] = useState<TaskFilters>({});
   const [viewMode, setViewMode] = useState<ViewMode>(getStoredView);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
   const [createDate, setCreateDate] = useState<string | null>(null);
+  const [detailTask, setDetailTask] = useState<Task | null>(null);
   const [showSidebar, setShowSidebar] = useState(false);
 
   const sensors = useSensors(
@@ -69,21 +72,16 @@ export default function DashboardPage() {
     [tasks, reorderTasks]
   );
 
-  const openCreate = () => { setEditingTask(undefined); setCreateDate(null); setModalOpen(true); };
-  const openEdit = (task: Task) => { setEditingTask(task); setCreateDate(null); setModalOpen(true); };
+  const openCreate = () => { setCreateDate(null); setModalOpen(true); };
+  const openDetail = (task: Task) => setDetailTask(task);
 
   const handleCreateWithDate = (date: Date) => {
-    setEditingTask(undefined);
     setCreateDate(format(date, 'yyyy-MM-dd'));
     setModalOpen(true);
   };
 
   const handleSave = async (data: Partial<Task>) => {
-    if (editingTask) {
-      await updateTask(editingTask._id, data);
-    } else {
-      await createTask(data);
-    }
+    await createTask(data);
     fetchTasks(filters);
   };
 
@@ -94,6 +92,7 @@ export default function DashboardPage() {
   const handleDelete = async (id: string) => {
     if (window.confirm('Delete this task?')) {
       await deleteTask(id);
+      setDetailTask(null);
     }
   };
 
@@ -157,7 +156,7 @@ export default function DashboardPage() {
                           <TaskCard
                             key={task._id}
                             task={task}
-                            onEdit={openEdit}
+                            onEdit={openDetail}
                             onDelete={handleDelete}
                             onToggle={handleToggle}
                           />
@@ -171,7 +170,7 @@ export default function DashboardPage() {
               {viewMode === 'board' && (
                 <BoardView
                   tasks={tasks}
-                  onEdit={openEdit}
+                  onEdit={openDetail}
                   onToggle={handleToggle}
                   onStatusChange={handleStatusChange}
                 />
@@ -180,7 +179,7 @@ export default function DashboardPage() {
               {viewMode === 'calendar' && (
                 <CalendarView
                   tasks={tasks}
-                  onEdit={openEdit}
+                  onEdit={openDetail}
                   onCreate={handleCreateWithDate}
                 />
               )}
@@ -191,7 +190,7 @@ export default function DashboardPage() {
                 ) : (
                   <TableView
                     tasks={tasks}
-                    onEdit={openEdit}
+                    onEdit={openDetail}
                     onDelete={handleDelete}
                     onToggle={handleToggle}
                   />
@@ -204,10 +203,19 @@ export default function DashboardPage() {
 
       {modalOpen && (
         <TaskModal
-          task={editingTask}
           defaultDate={createDate}
           onSave={handleSave}
           onClose={() => setModalOpen(false)}
+        />
+      )}
+
+      {detailTask && user && (
+        <TaskDetailPanel
+          task={detailTask}
+          currentUser={user}
+          onClose={() => setDetailTask(null)}
+          onUpdated={(updated) => { replaceTask(updated); setDetailTask(updated); }}
+          onDelete={handleDelete}
         />
       )}
     </div>
