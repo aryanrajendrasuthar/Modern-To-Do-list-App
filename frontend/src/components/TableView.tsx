@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { format, parseISO, isAfter } from 'date-fns';
+import { format, isAfter } from 'date-fns';
+import { parseLocalDate } from '../utils/date';
 import type { Task, Priority, Status } from '../types';
 import styles from './TableView.module.css';
 
@@ -94,7 +95,7 @@ export default function TableView({ tasks, onEdit, onDelete, onToggle }: Props) 
         </thead>
         <tbody>
           {sorted.map((task) => {
-            const overdue = task.dueDate && !task.completed && isAfter(new Date(), parseISO(task.dueDate));
+            const overdue = task.dueDate && !task.completed && isAfter(new Date(), parseLocalDate(task.dueDate));
             const subtaskDone = task.subtasks.filter((s) => s.completed).length;
             return (
               <tr key={task._id} className={`${styles.row} ${task.completed ? styles.completedRow : ''}`}>
@@ -132,7 +133,7 @@ export default function TableView({ tasks, onEdit, onDelete, onToggle }: Props) 
                 <td className={`${styles.td} ${overdue ? styles.overdueCell : ''}`}>
                   {task.dueDate ? (
                     <>
-                      {format(parseISO(task.dueDate), 'MMM d, yyyy')}
+                      {format(parseLocalDate(task.dueDate), 'MMM d, yyyy')}
                       {task.dueTime && <span className={styles.dueTime}> {task.dueTime}</span>}
                     </>
                   ) : (

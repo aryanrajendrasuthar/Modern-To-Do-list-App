@@ -11,7 +11,8 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import { isAfter, parseISO, format } from 'date-fns';
+import { isAfter, format } from 'date-fns';
+import { parseLocalDate } from '../utils/date';
 import type { Task, Status, Priority } from '../types';
 import styles from './BoardView.module.css';
 
@@ -40,7 +41,7 @@ interface CardContentProps {
 }
 
 function CardContent({ task, onEdit, onToggle }: CardContentProps) {
-  const isOverdue = task.dueDate && !task.completed && isAfter(new Date(), parseISO(task.dueDate));
+  const isOverdue = task.dueDate && !task.completed && isAfter(new Date(), parseLocalDate(task.dueDate));
   const done = task.subtasks.filter((s) => s.completed).length;
   const total = task.subtasks.length;
 
@@ -67,7 +68,7 @@ function CardContent({ task, onEdit, onToggle }: CardContentProps) {
         </span>
         {task.dueDate && (
           <span className={`${styles.due} ${isOverdue ? styles.overdue : ''}`}>
-            {format(parseISO(task.dueDate), 'MMM d')}
+            {format(parseLocalDate(task.dueDate), 'MMM d')}
           </span>
         )}
         {total > 0 && (

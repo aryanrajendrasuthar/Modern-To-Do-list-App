@@ -1,6 +1,7 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { isAfter, parseISO, format } from 'date-fns';
+import { isAfter, format } from 'date-fns';
+import { parseLocalDate } from '../utils/date';
 import type { Task } from '../types';
 import styles from './TaskCard.module.css';
 
@@ -35,10 +36,10 @@ export default function TaskCard({ task, onEdit, onDelete, onToggle }: Props) {
   };
 
   const isOverdue =
-    task.dueDate && !task.completed && isAfter(new Date(), parseISO(task.dueDate));
+    task.dueDate && !task.completed && isAfter(new Date(), parseLocalDate(task.dueDate));
 
   const formattedDue = task.dueDate
-    ? format(parseISO(task.dueDate), 'MMM d, yyyy')
+    ? format(parseLocalDate(task.dueDate), 'MMM d, yyyy')
     : null;
 
   return (

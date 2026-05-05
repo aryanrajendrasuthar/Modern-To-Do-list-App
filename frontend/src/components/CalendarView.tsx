@@ -12,9 +12,9 @@ import {
   addWeeks,
   subWeeks,
   format,
-  parseISO,
   isAfter,
 } from 'date-fns';
+import { parseLocalDate } from '../utils/date';
 import type { Task, Priority } from '../types';
 import styles from './CalendarView.module.css';
 
@@ -59,7 +59,7 @@ export default function CalendarView({ tasks, onEdit, onCreate }: Props) {
   const goToday = () => setCurrentDate(new Date());
 
   const getTasksForDay = (day: Date) =>
-    tasks.filter((t) => t.dueDate && isSameDay(parseISO(t.dueDate), day));
+    tasks.filter((t) => t.dueDate && isSameDay(parseLocalDate(t.dueDate), day));
 
   const title = weekMode
     ? `${format(days[0], 'MMM d')} – ${format(days[6], 'MMM d, yyyy')}`
@@ -104,7 +104,7 @@ export default function CalendarView({ tasks, onEdit, onCreate }: Props) {
 
               <div className={styles.pills}>
                 {dayTasks.slice(0, weekMode ? 8 : 3).map((t) => {
-                  const overdue = t.dueDate && !t.completed && isAfter(new Date(), parseISO(t.dueDate));
+                  const overdue = t.dueDate && !t.completed && isAfter(new Date(), parseLocalDate(t.dueDate));
                   return (
                     <div
                       key={t._id}

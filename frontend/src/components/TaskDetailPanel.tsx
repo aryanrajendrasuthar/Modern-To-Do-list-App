@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, type FormEvent } from 'react';
 import { format, parseISO } from 'date-fns';
+import { parseLocalDate } from '../utils/date';
 import type { Task, Priority, Status, User } from '../types';
 import { tasksApi } from '../services/api';
 import RichTextEditor from './RichTextEditor';
@@ -189,7 +190,7 @@ export default function TaskDetailPanel({ task, currentUser, onClose, onUpdated,
               <input
                 type="date"
                 className={styles.propInput}
-                value={localTask.dueDate ? format(parseISO(localTask.dueDate), 'yyyy-MM-dd') : ''}
+                value={localTask.dueDate ? format(parseLocalDate(localTask.dueDate), 'yyyy-MM-dd') : ''}
                 onChange={(e) => patch({ dueDate: e.target.value || null })}
               />
             </div>
