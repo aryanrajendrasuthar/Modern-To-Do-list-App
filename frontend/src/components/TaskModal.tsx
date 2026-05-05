@@ -92,9 +92,9 @@ export default function TaskModal({ task, defaultDate, onSave, onClose }: Props)
             <div className={styles.field}>
               <label className={styles.label}>Priority</label>
               <select className={styles.select} value={priority} onChange={(e) => setPriority(e.target.value as Priority)}>
-                <option value="high">🔴 High</option>
-                <option value="medium">🟡 Medium</option>
-                <option value="low">🟢 Low</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
               </select>
             </div>
 
@@ -106,7 +106,9 @@ export default function TaskModal({ task, defaultDate, onSave, onClose }: Props)
                 <option value="done">Done</option>
               </select>
             </div>
+          </div>
 
+          <div className={styles.row}>
             <div className={styles.field}>
               <label className={styles.label}>Due Date</label>
               <input
