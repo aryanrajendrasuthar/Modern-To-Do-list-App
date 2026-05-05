@@ -1,5 +1,6 @@
 const { validationResult } = require('express-validator');
 const Task = require('../models/Task');
+const { calculateNextDue } = require('../utils/recurrence');
 
 const TASK_FIELDS = [
   'title', 'description', 'richDescription', 'priority', 'status',
@@ -79,11 +80,44 @@ const updateTask = async (req, res, next) => {
       return res.status(404).json({ message: 'Task not found' });
     }
 
+    const wasCompleted = task.completed;
+
     TASK_FIELDS.forEach((field) => {
       if (req.body[field] !== undefined) task[field] = req.body[field];
     });
 
     await task.save();
+
+    // Spawn next occurrence when a recurring task is completed for the first time
+    if (!wasCompleted && task.completed && task.recurrence && task.recurrence.enabled) {
+      const nextDue = calculateNextDue(task.dueDate, task.recurrence);
+      const pastEnd = task.recurrence.endDate && nextDue > new Date(task.recurrence.endDate);
+      if (nextDue && !pastEnd) {
+        const recurrenceData = task.recurrence.toObject
+          ? task.recurrence.toObject()
+          : { ...task.recurrence };
+        recurrenceData.nextDue = nextDue;
+        await Task.create({
+          title: task.title,
+          description: task.description,
+          richDescription: task.richDescription,
+          priority: task.priority,
+          status: 'todo',
+          completed: false,
+          dueDate: nextDue,
+          dueTime: task.dueTime,
+          startDate: null,
+          tags: [...task.tags],
+          order: task.order + 1,
+          icon: task.icon,
+          coverColor: task.coverColor,
+          recurrence: recurrenceData,
+          estimatedMinutes: task.estimatedMinutes,
+          userId: task.userId,
+        });
+      }
+    }
+
     res.json({ task });
   } catch (err) {
     next(err);

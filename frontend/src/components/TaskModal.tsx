@@ -19,6 +19,7 @@ export default function TaskModal({ task, defaultDate, onSave, onClose }: Props)
       ? new Date(task.dueDate).toISOString().split('T')[0]
       : (defaultDate || '')
   );
+  const [dueTime, setDueTime] = useState<string>(task?.dueTime || '');
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState<string[]>(task?.tags || []);
   const [loading, setLoading] = useState(false);
@@ -44,7 +45,7 @@ export default function TaskModal({ task, defaultDate, onSave, onClose }: Props)
     setError('');
     setLoading(true);
     try {
-      await onSave({ title: title.trim(), description: description.trim(), priority, status, dueDate: dueDate || null, tags });
+      await onSave({ title: title.trim(), description: description.trim(), priority, status, dueDate: dueDate || null, dueTime: dueTime || null, tags });
       onClose();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to save task');
@@ -113,6 +114,16 @@ export default function TaskModal({ task, defaultDate, onSave, onClose }: Props)
                 className={styles.input}
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label}>Due Time</label>
+              <input
+                type="time"
+                className={styles.input}
+                value={dueTime}
+                onChange={(e) => setDueTime(e.target.value)}
               />
             </div>
           </div>

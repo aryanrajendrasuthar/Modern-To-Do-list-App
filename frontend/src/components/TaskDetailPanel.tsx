@@ -6,6 +6,8 @@ import RichTextEditor from './RichTextEditor';
 import SubtaskList from './SubtaskList';
 import CommentSection from './CommentSection';
 import EmojiPicker from './EmojiPicker';
+import TimePickerInput from './TimePickerInput';
+import RecurrenceSelector from './RecurrenceSelector';
 import styles from './TaskDetailPanel.module.css';
 
 const PRIORITY_CLASS: Record<Priority, string> = {
@@ -193,6 +195,27 @@ export default function TaskDetailPanel({ task, currentUser, onClose, onUpdated,
             </div>
 
             <div className={styles.prop}>
+              <span className={styles.propLabel}>Due time</span>
+              <TimePickerInput
+                value={localTask.dueTime}
+                onChange={(v) => patch({ dueTime: v })}
+              />
+            </div>
+
+            <div className={styles.prop}>
+              <span className={styles.propLabel}>Estimate (min)</span>
+              <input
+                type="number"
+                min={1}
+                className={styles.propInput}
+                style={{ width: 90 }}
+                value={localTask.estimatedMinutes ?? ''}
+                placeholder="—"
+                onChange={(e) => patch({ estimatedMinutes: e.target.value ? parseInt(e.target.value) : null })}
+              />
+            </div>
+
+            <div className={styles.prop}>
               <span className={styles.propLabel}>Completed</span>
               <button
                 className={`${styles.checkbox} ${localTask.completed ? styles.checked : ''}`}
@@ -239,6 +262,14 @@ export default function TaskDetailPanel({ task, currentUser, onClose, onUpdated,
                 />
               </div>
             </div>
+          </div>
+
+          {/* Recurrence */}
+          <div className={styles.section}>
+            <RecurrenceSelector
+              value={localTask.recurrence}
+              onChange={(rec) => patch({ recurrence: rec })}
+            />
           </div>
 
           {/* Rich description */}

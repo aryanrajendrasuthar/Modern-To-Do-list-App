@@ -17,6 +17,7 @@ import {
 import { format } from 'date-fns';
 import { useTasks } from '../hooks/useTasks';
 import { useAuth } from '../hooks/useAuth';
+import { useReminders } from '../hooks/useReminders';
 import type { Task, TaskFilters, Status, ViewMode } from '../types';
 import Navbar from '../components/Navbar';
 import FilterPanel from '../components/FilterPanel';
@@ -39,6 +40,7 @@ export default function DashboardPage() {
   const { tasks, loading, error, fetchTasks, createTask, updateTask, deleteTask, reorderTasks, replaceTask } =
     useTasks();
   const { user } = useAuth();
+  useReminders(tasks);
   const [filters, setFilters] = useState<TaskFilters>({});
   const [viewMode, setViewMode] = useState<ViewMode>(getStoredView);
   const [modalOpen, setModalOpen] = useState(false);
