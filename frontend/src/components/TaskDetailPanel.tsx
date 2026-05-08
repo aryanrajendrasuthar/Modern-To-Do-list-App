@@ -220,7 +220,13 @@ export default function TaskDetailPanel({ task, currentUser, onClose, onUpdated,
               <span className={styles.propLabel}>Completed</span>
               <button
                 className={`${styles.checkbox} ${localTask.completed ? styles.checked : ''}`}
-                onClick={() => patch({ completed: !localTask.completed })}
+                onClick={() => {
+                  const completing = !localTask.completed;
+                  const updates: Partial<import('../types').Task> = { completed: completing };
+                  if (completing) updates.status = 'done';
+                  else if (localTask.status === 'done') updates.status = 'todo';
+                  patch(updates);
+                }}
               >
                 {localTask.completed && '✓'}
               </button>

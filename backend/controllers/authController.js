@@ -116,4 +116,33 @@ const getMe = async (req, res) => {
   res.json({ user: req.user });
 };
 
-module.exports = { register, login, refresh, logout, getMe };
+const updateMe = async (req, res, next) => {
+  try {
+    const { name, email, currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.user._id).select('+passwordHash');
+
+    if (name && name.trim()) user.name = name.trim();
+
+    if (email && email !== user.email) {
+      const existing = await User.findOne({ email: email.toLowerCase() });
+      if (existing) return res.status(409).json({ message: 'Email already in use' });
+      user.email = email.toLowerCase();
+    }
+
+    if (newPassword) {
+      if (!currentPassword) {
+        return res.status(400).json({ message: 'Current password is required to set a new password' });
+      }
+      const valid = await user.comparePassword(currentPassword);
+      if (!valid) return res.status(401).json({ message: 'Current password is incorrect' });
+      user.passwordHash = newPassword;
+    }
+
+    await user.save();
+    res.json({ user });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { register, login, refresh, logout, getMe, updateMe };

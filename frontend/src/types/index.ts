@@ -72,4 +72,6 @@ export interface TaskFilters {
   search?: string;
   startDate?: string;
   endDate?: string;
+  hideCompleted?: boolean;
+  overdue?: boolean;
 }

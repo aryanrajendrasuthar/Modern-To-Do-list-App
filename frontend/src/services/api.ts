@@ -44,6 +44,8 @@ export const authApi = {
   login: (data: { email: string; password: string }) => api.post('/auth/login', data),
   logout: (refreshToken: string) => api.post('/auth/logout', { refreshToken }),
   getMe: () => api.get('/auth/me'),
+  updateMe: (data: { name?: string; email?: string; currentPassword?: string; newPassword?: string }) =>
+    api.patch('/auth/me', data),
 };
 
 export const tasksApi = {

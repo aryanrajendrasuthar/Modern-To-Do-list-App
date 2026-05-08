@@ -20,7 +20,7 @@ export default function FilterPanel({ filters, allTags, onFiltersChange }: Props
   const setPriority = (priority: Priority | undefined) => onFiltersChange({ ...filters, priority });
   const setTag = (tag: string | undefined) => onFiltersChange({ ...filters, tag });
 
-  const hasFilters = filters.status || filters.priority || filters.tag || filters.search;
+  const hasFilters = filters.status || filters.priority || filters.tag || filters.search || filters.overdue || filters.hideCompleted;
 
   return (
     <div className={styles.panel}>
@@ -78,6 +78,28 @@ export default function FilterPanel({ filters, allTags, onFiltersChange }: Props
           </div>
         </div>
       )}
+
+      <div className={styles.section}>
+        <span className={styles.label}>Show</span>
+        <div className={styles.pills}>
+          <button
+            className={`${styles.pill} ${styles.overduePill} ${filters.overdue ? styles.overdueActive : ''}`}
+            onClick={() => onFiltersChange({ ...filters, overdue: !filters.overdue })}
+          >
+            Overdue only
+          </button>
+        </div>
+      </div>
+
+      <label className={styles.toggleRow}>
+        <input
+          type="checkbox"
+          className={styles.checkboxInput}
+          checked={!!filters.hideCompleted}
+          onChange={(e) => onFiltersChange({ ...filters, hideCompleted: e.target.checked })}
+        />
+        <span className={styles.toggleLabel}>Hide completed</span>
+      </label>
 
       {hasFilters && (
         <button

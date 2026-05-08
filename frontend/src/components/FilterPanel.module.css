@@ -66,6 +66,30 @@
 .pill.low { border-color: #86efac; color: #16a34a; }
 .pill.low.active { background: #16a34a; border-color: #16a34a; color: white; }
 
+.overduePill { border-color: #fca5a5; color: #dc2626; }
+.overduePill.overdueActive { background: #dc2626; border-color: #dc2626; color: white; }
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.checkboxInput {
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.toggleLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  user-select: none;
+}
+
 .clearBtn {
   background: none;
   border: 1px solid var(--border);

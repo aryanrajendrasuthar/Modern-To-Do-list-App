@@ -82,6 +82,12 @@ export default function CalendarView({ tasks, onEdit, onCreate }: Props) {
         </button>
       </div>
 
+      {tasks.length === 0 && (
+        <div className={styles.emptyBanner}>
+          No tasks scheduled yet — click any day to create one.
+        </div>
+      )}
+
       <div className={`${styles.grid} ${weekMode ? styles.weekGrid : ''}`}>
         {DAY_LABELS.map((d) => (
           <div key={d} className={styles.dayLabel}>{d}</div>

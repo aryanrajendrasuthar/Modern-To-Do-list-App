@@ -36,5 +36,15 @@ export const useAuth = () => {
     setUser(null);
   }, []);
 
-  return { user, loading, login, register, logout };
+  const updateUser = useCallback(async (data: {
+    name?: string;
+    email?: string;
+    currentPassword?: string;
+    newPassword?: string;
+  }) => {
+    const res = await authApi.updateMe(data);
+    setUser(res.data.user);
+  }, []);
+
+  return { user, loading, login, register, logout, updateUser };
 };

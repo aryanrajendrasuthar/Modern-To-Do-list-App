@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { useTheme } from '../context/ThemeContext';
 import styles from './Navbar.module.css';
@@ -16,10 +17,10 @@ export default function Navbar() {
         <button onClick={toggleTheme} className={styles.themeBtn} title="Toggle theme">
           {theme === 'dark' ? '☀️' : '🌙'}
         </button>
-        <div className={styles.userInfo}>
+        <Link to="/profile" className={styles.userInfo} title="Account settings">
           <span className={styles.avatar}>{user?.name.charAt(0).toUpperCase()}</span>
           <span className={styles.userName}>{user?.name}</span>
-        </div>
+        </Link>
         <button onClick={logout} className={styles.logoutBtn}>
           Sign out
         </button>

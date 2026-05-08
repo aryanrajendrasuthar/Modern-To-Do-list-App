@@ -15,6 +15,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { format } from 'date-fns';
+import { parseLocalDate } from '../utils/date';
 import { useTasks } from '../hooks/useTasks';
 import { useAuth } from '../hooks/useAuth';
 import { useReminders } from '../hooks/useReminders';
@@ -88,7 +89,11 @@ export default function DashboardPage() {
   };
 
   const handleToggle = (task: Task) => {
-    updateTask(task._id, { completed: !task.completed });
+    const completing = !task.completed;
+    const updates: Partial<Task> = { completed: completing };
+    if (completing) updates.status = 'done';
+    else if (task.status === 'done') updates.status = 'todo';
+    updateTask(task._id, updates);
   };
 
   const handleDelete = async (id: string) => {
@@ -103,10 +108,17 @@ export default function DashboardPage() {
     fetchTasks(filters);
   };
 
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const filteredTasks = tasks
+    .filter((t) => !filters.hideCompleted || !t.completed)
+    .filter((t) => !filters.overdue || (t.dueDate && !t.completed && parseLocalDate(t.dueDate) < todayStart));
+
   const allTags = [...new Set(tasks.flatMap((t) => t.tags))];
-  const todoCount = tasks.filter((t) => t.status === 'todo' && !t.completed).length;
-  const inProgressCount = tasks.filter((t) => t.status === 'in-progress').length;
-  const doneCount = tasks.filter((t) => t.completed || t.status === 'done').length;
+  const todoCount = filteredTasks.filter((t) => t.status === 'todo' && !t.completed).length;
+  const inProgressCount = filteredTasks.filter((t) => t.status === 'in-progress').length;
+  const doneCount = filteredTasks.filter((t) => t.completed || t.status === 'done').length;
 
   return (
     <div className={styles.page}>
@@ -148,13 +160,13 @@ export default function DashboardPage() {
           ) : (
             <>
               {viewMode === 'list' && (
-                tasks.length === 0 ? (
+                filteredTasks.length === 0 ? (
                   <EmptyState hasFilters={Object.keys(filters).length > 0} onCreate={openCreate} />
                 ) : (
                   <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-                    <SortableContext items={tasks.map((t) => t._id)} strategy={verticalListSortingStrategy}>
+                    <SortableContext items={filteredTasks.map((t) => t._id)} strategy={verticalListSortingStrategy}>
                       <div className={styles.taskList}>
-                        {tasks.map((task) => (
+                        {filteredTasks.map((task) => (
                           <TaskCard
                             key={task._id}
                             task={task}
@@ -170,28 +182,32 @@ export default function DashboardPage() {
               )}
 
               {viewMode === 'board' && (
-                <BoardView
-                  tasks={tasks}
-                  onEdit={openDetail}
-                  onToggle={handleToggle}
-                  onStatusChange={handleStatusChange}
-                />
+                filteredTasks.length === 0 ? (
+                  <EmptyState hasFilters={Object.keys(filters).length > 0} onCreate={openCreate} />
+                ) : (
+                  <BoardView
+                    tasks={filteredTasks}
+                    onEdit={openDetail}
+                    onToggle={handleToggle}
+                    onStatusChange={handleStatusChange}
+                  />
+                )
               )}
 
               {viewMode === 'calendar' && (
                 <CalendarView
-                  tasks={tasks}
+                  tasks={filteredTasks}
                   onEdit={openDetail}
                   onCreate={handleCreateWithDate}
                 />
               )}
 
               {viewMode === 'table' && (
-                tasks.length === 0 ? (
+                filteredTasks.length === 0 ? (
                   <EmptyState hasFilters={Object.keys(filters).length > 0} onCreate={openCreate} />
                 ) : (
                   <TableView
-                    tasks={tasks}
+                    tasks={filteredTasks}
                     onEdit={openDetail}
                     onDelete={handleDelete}
                     onToggle={handleToggle}
